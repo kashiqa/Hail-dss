@@ -52,6 +52,11 @@ export default function DecisionForm({ onSubmit, loading }) {
         if (step === 1) {
             const valid = form.options.filter(o => o.trim())
             if (valid.length < 2) e.options = 'Enter at least 2 options.'
+            else {
+                // Client-side sanity check: must have at least 3 chars and contain some letters
+                const crazy = valid.find(o => o.trim().length < 3 || !/[a-zA-Z]/.test(o))
+                if (crazy) e.options = `"${crazy.trim()}" doesn't look like a valid option. Please enter something meaningful.`
+            }
         }
         if (step === 2) {
             if (!form.budget && form.budget !== 0) e.budget = 'Budget is required.'

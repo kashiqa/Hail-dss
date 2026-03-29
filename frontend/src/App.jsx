@@ -40,8 +40,10 @@ export default function App() {
             setResult(data)
             setView(VIEWS.RESULTS)
         } catch (err) {
-            const msg = err?.response?.data?.detail || err.message || 'Something went wrong. Is the backend running?'
-            setError(msg)
+            const detail = err?.response?.data?.detail || err.message || 'Something went wrong. Is the backend running?'
+            // 400 = invalid input from AI validation
+            const isInvalid = err?.response?.status === 400
+            setError({ message: detail, isInvalid })
         } finally {
             setLoading(false)
         }
@@ -61,14 +63,21 @@ export default function App() {
             {error && (
                 <div style={{
                     position: 'fixed', top: 76, left: '50%', transform: 'translateX(-50%)',
-                    zIndex: 300, background: 'var(--bg-card)', border: '1px solid var(--danger)',
-                    borderRadius: 'var(--radius-md)', padding: '14px 22px', maxWidth: 520,
-                    color: 'var(--danger)', fontSize: '0.9rem', boxShadow: '0 8px 30px rgba(0,0,0,0.5)',
-                    display: 'flex', gap: 12, alignItems: 'center',
+                    zIndex: 300, background: 'var(--bg-card)',
+                    border: `1px solid ${error.isInvalid ? 'var(--warning)' : 'var(--danger)'}`,
+                    borderRadius: 'var(--radius-md)', padding: '14px 22px', maxWidth: 560,
+                    color: error.isInvalid ? 'var(--warning)' : 'var(--danger)',
+                    fontSize: '0.9rem', boxShadow: '0 8px 30px rgba(0,0,0,0.5)',
+                    display: 'flex', gap: 12, alignItems: 'flex-start',
                 }}>
-                    <span style={{ fontSize: 20 }}>⚠️</span>
-                    <span>{error}</span>
-                    <button style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', fontSize: 18, padding: 2 }} onClick={() => setError(null)}>✕</button>
+                    <span style={{ fontSize: 20, flexShrink: 0 }}>{error.isInvalid ? '🚫' : '⚠️'}</span>
+                    <div>
+                        {error.isInvalid && (
+                            <div style={{ fontWeight: 700, marginBottom: 4 }}>Invalid Input</div>
+                        )}
+                        <span>{error.message}</span>
+                    </div>
+                    <button style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', fontSize: 18, padding: 2, flexShrink: 0 }} onClick={() => setError(null)}>✕</button>
                 </div>
             )}
 
@@ -99,10 +108,10 @@ export default function App() {
                     }}>
                         <div style={{ width: 56, height: 56, borderRadius: '50%', border: '3px solid var(--border)', borderTopColor: 'var(--accent)', animation: 'spin 0.8s linear infinite' }} />
                         <div style={{ fontFamily: 'var(--font-head)', fontSize: '1.1rem', color: 'var(--text-secondary)' }}>
-                            Analysing your decision…
+                            🤖 AI is analysing your decision…
                         </div>
                         <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                            Running rule-based engine across all dimensions
+                            Gemini is evaluating your options across all dimensions
                         </div>
                     </div>
                 )}

@@ -1,6 +1,10 @@
 """
-HAIL-DSS Backend — FastAPI Server
+HAIL-DSS Backend — FastAPI Server (AI-Powered by Google Gemini)
 """
+import os
+from dotenv import load_dotenv
+load_dotenv()  # Load GEMINI_API_KEY from .env
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, field_validator
@@ -86,8 +90,8 @@ async def decide(req: DecisionRequest):
 
     top = ranked[0] if ranked else None
     summary = (
-        f"Based on your {req.goal} decision, "
-        f"'{top['option']}' is the top recommendation with a score of {top['score_pct']}% "
+        f"AI analysis complete for your {req.goal} decision. "
+        f"\u2018{top['option']}\u2019 is the top recommendation with a score of {top['score_pct']}% "
         f"and confidence of {top['confidence_pct']}%."
         if top else "No valid options were evaluated."
     )
