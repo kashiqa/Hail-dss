@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react'
+import { useLanguage } from './contexts/LanguageContext'
 import Navbar from './components/Navbar'
 import Dashboard from './components/Dashboard'
 import DecisionForm from './components/DecisionForm'
@@ -10,6 +11,7 @@ import { saveDecision, loadHistory } from './utils/storage'
 const VIEWS = { DASHBOARD: 'dashboard', FORM: 'form', RESULTS: 'results' }
 
 export default function App() {
+    const { t, isRTL } = useLanguage()
     const [view, setView] = useState(VIEWS.DASHBOARD)
     const [result, setResult] = useState(null)
     const [loading, setLoading] = useState(false)
@@ -40,7 +42,7 @@ export default function App() {
             setResult(data)
             setView(VIEWS.RESULTS)
         } catch (err) {
-            const detail = err?.response?.data?.detail || err.message || 'Something went wrong. Is the backend running?'
+            const detail = err?.response?.data?.detail || err.message || t('errors.generic')
             // 400 = invalid input from AI validation
             const isInvalid = err?.response?.status === 400
             setError({ message: detail, isInvalid })
@@ -56,7 +58,7 @@ export default function App() {
     }
 
     return (
-        <div style={{ minHeight: '100vh', position: 'relative' }}>
+        <div style={{ minHeight: '100vh', position: 'relative', direction: isRTL ? 'rtl' : 'ltr' }}>
             <Navbar onHistoryToggle={() => setHistoryOpen(o => !o)} historyOpen={historyOpen} />
 
             {/* Error toast */}
@@ -73,7 +75,7 @@ export default function App() {
                     <span style={{ fontSize: 20, flexShrink: 0 }}>{error.isInvalid ? '🚫' : '⚠️'}</span>
                     <div>
                         {error.isInvalid && (
-                            <div style={{ fontWeight: 700, marginBottom: 4 }}>Invalid Input</div>
+                            <div style={{ fontWeight: 700, marginBottom: 4 }}>{t('errors.invalidInput')}</div>
                         )}
                         <span>{error.message}</span>
                     </div>
@@ -108,10 +110,10 @@ export default function App() {
                     }}>
                         <div style={{ width: 56, height: 56, borderRadius: '50%', border: '3px solid var(--border)', borderTopColor: 'var(--accent)', animation: 'spin 0.8s linear infinite' }} />
                         <div style={{ fontFamily: 'var(--font-head)', fontSize: '1.1rem', color: 'var(--text-secondary)' }}>
-                            🤖 AI is analysing your decision…
+                            {t('loading.title')}
                         </div>
                         <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                            Gemini is evaluating your options across all dimensions
+                            {t('loading.subtitle')}
                         </div>
                     </div>
                 )}
@@ -136,8 +138,8 @@ export default function App() {
             {view === VIEWS.DASHBOARD && (
                 <footer style={{ borderTop: '1px solid var(--border)', padding: '20px 24px', textAlign: 'center', position: 'relative', zIndex: 1 }}>
                     <p style={{ fontSize: '0.82rem', margin: 0 }}>
-                        HAIL-DSS v1.0 · Human-AI Life Decision Support System ·{' '}
-                        <span style={{ color: 'var(--success)' }}>🔐 100% Private — No data leaves your device</span>
+                        {t('app.footer')} ·{' '}
+                        <span style={{ color: 'var(--success)' }}>{t('app.privacy')}</span>
                     </p>
                 </footer>
             )}

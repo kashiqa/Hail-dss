@@ -1,10 +1,27 @@
-import React, { useEffect, useRef } from 'react'
+import React from 'react'
+import { useLanguage } from '../contexts/LanguageContext'
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     RadarChart, Radar, PolarGrid, PolarAngleAxis, Legend,
 } from 'recharts'
 
+const DIMENSION_KEYS = {
+    'financial feasibility': 'dimensions.financialFeasibility',
+    'financial_feasibility': 'dimensions.financialFeasibility',
+    'risk alignment': 'dimensions.riskAlignment',
+    'risk_alignment': 'dimensions.riskAlignment',
+    'time alignment': 'dimensions.timeAlignment',
+    'time_alignment': 'dimensions.timeAlignment',
+    'career alignment': 'dimensions.careerAlignment',
+    'career_alignment': 'dimensions.careerAlignment',
+    'growth potential': 'dimensions.growthPotential',
+    'growth_potential': 'dimensions.growthPotential',
+    'personal fit': 'dimensions.personalFit',
+    'personal_fit': 'dimensions.personalFit',
+}
+
 export default function DecisionChart({ rankedPaths }) {
+    const { t } = useLanguage()
     if (!rankedPaths || rankedPaths.length === 0) return null
 
     // Bar chart data
@@ -18,7 +35,9 @@ export default function DecisionChart({ rankedPaths }) {
     const top2 = rankedPaths.slice(0, 2)
     const dims = Object.keys(top2[0]?.dimension_scores || {})
     const radarData = dims.map(d => {
-        const row = { dimension: d.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) }
+        const dimKey = DIMENSION_KEYS[d] || d
+        const translatedDim = t(dimKey, {}) || d.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+        const row = { dimension: translatedDim }
         top2.forEach(p => { row[p.option.slice(0, 20)] = p.dimension_scores[d] })
         return row
     })
@@ -41,7 +60,7 @@ export default function DecisionChart({ rankedPaths }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
             {/* ── Scores Bar Chart ─────────────────────────────────── */}
             <div className="card p-6">
-                <h3 style={{ marginBottom: 20 }}>📊 Score Comparison</h3>
+                <h3 style={{ marginBottom: 20 }}>📊 {t('charts.scoreComparison')}</h3>
                 <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={barData} margin={{ top: 4, right: 20, left: 0, bottom: 0 }}>
                         <CartesianGrid strokeDasharray="4 4" stroke="var(--border)" />
@@ -58,8 +77,8 @@ export default function DecisionChart({ rankedPaths }) {
             {/* ── Radar (Dimension) Chart ───────────────────────────── */}
             {radarData.length > 0 && top2.length >= 2 && (
                 <div className="card p-6">
-                    <h3 style={{ marginBottom: 4 }}>🕸 Dimension Analysis</h3>
-                    <p style={{ fontSize: '0.84rem', marginBottom: 20 }}>Top 2 options compared across all evaluation dimensions</p>
+                    <h3 style={{ marginBottom: 4 }}>🕸 {t('charts.dimensionAnalysis')}</h3>
+                    <p style={{ fontSize: '0.84rem', marginBottom: 20 }}>{t('charts.top2Comparison')}</p>
                     <ResponsiveContainer width="100%" height={280}>
                         <RadarChart data={radarData} margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
                             <PolarGrid stroke="var(--border)" />

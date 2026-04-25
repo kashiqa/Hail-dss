@@ -1,7 +1,10 @@
 import React from 'react'
+import { useLanguage } from '../contexts/LanguageContext'
 import { deleteDecision, clearHistory } from '../utils/storage'
 
 export default function HistoryPanel({ history, onClose, onRefresh }) {
+    const { t } = useLanguage()
+    
     const handleDelete = id => {
         deleteDecision(id)
         onRefresh()
@@ -25,12 +28,12 @@ export default function HistoryPanel({ history, onClose, onRefresh }) {
             {/* Header */}
             <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, background: 'var(--bg-base)', zIndex: 10 }}>
                 <div>
-                    <h3 style={{ margin: 0, fontFamily: 'var(--font-head)' }}>📋 Decision History</h3>
-                    <p style={{ margin: 0, fontSize: '0.8rem' }}>{history.length} saved decisions • Stored locally</p>
+                    <h3 style={{ margin: 0, fontFamily: 'var(--font-head)' }}>{t('history.title')}</h3>
+                    <p style={{ margin: 0, fontSize: '0.8rem' }}>{t('history.count', { count: history.length })}</p>
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                     {history.length > 0 && (
-                        <button className="btn btn-danger btn-sm" onClick={handleClear} title="Clear all">🗑 Clear All</button>
+                        <button className="btn btn-danger btn-sm" onClick={handleClear} title="Clear all">{t('history.clearAll')}</button>
                     )}
                     <button className="btn btn-ghost btn-sm" onClick={onClose}>✕</button>
                 </div>
@@ -38,14 +41,14 @@ export default function HistoryPanel({ history, onClose, onRefresh }) {
 
             {/* Privacy notice */}
             <div style={{ margin: '16px 20px', background: 'hsla(150,70%,50%,0.08)', border: '1px solid hsla(150,70%,50%,0.2)', borderRadius: 'var(--radius-sm)', padding: '10px 14px', fontSize: '0.8rem', color: 'var(--success)' }}>
-                🔐 All decisions are stored only in your browser. Nothing is shared externally.
+                {t('history.privacy')}
             </div>
 
             {/* History list */}
             {history.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '60px 24px', color: 'var(--text-muted)' }}>
-                    <div style={{ fontSize: 48, marginBottom: 16 }}>📭</div>
-                    <p>No decisions saved yet. Run a decision analysis to see it here.</p>
+                    <div style={{ fontSize: 48, marginBottom: 16 }}>{t('history.empty.icon')}</div>
+                    <p>{t('history.empty.text')}</p>
                 </div>
             ) : (
                 <div style={{ padding: '12px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>

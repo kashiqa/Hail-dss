@@ -1,6 +1,9 @@
 import React from 'react'
+import { useLanguage } from '../contexts/LanguageContext'
+import LanguageSwitcher from './LanguageSwitcher'
 
 export default function Navbar({ onHistoryToggle, historyOpen }) {
+    const { t } = useLanguage()
     return (
         <nav style={{
             position: 'sticky', top: 0, zIndex: 100,
@@ -23,7 +26,7 @@ export default function Navbar({ onHistoryToggle, historyOpen }) {
                             HAIL-DSS
                         </div>
                         <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.06em' }}>
-                            DECISION INTELLIGENCE SYSTEM
+                            {t('app.tagline')}
                         </div>
                     </div>
                 </div>
@@ -37,14 +40,15 @@ export default function Navbar({ onHistoryToggle, historyOpen }) {
                         fontSize: '0.78rem', color: 'var(--success)',
                     }}>
                         <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--success)', display: 'inline-block', animation: 'pulse 2s infinite' }} />
-                        Privacy-First
+                        {t('nav.privacyFirst')}
                     </div>
+                    <LanguageSwitcher />
                     <button
                         className="btn btn-ghost btn-sm"
                         onClick={onHistoryToggle}
                         style={{ display: 'flex', alignItems: 'center', gap: 6 }}
                     >
-                        📋 {historyOpen ? 'Close' : 'History'}
+                        📋 {historyOpen ? t('nav.close') : t('nav.history')}
                     </button>
                 </div>
             </div>
